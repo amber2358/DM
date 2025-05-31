@@ -1,5 +1,5 @@
 {
-    "cp_path": "../data/chinese-poetry", 
+    "cp_path": "D:\\code\\Python\\DM\\chinese-poetry", 
     "datasets": {
         "wudai-huajianji": {
             "name": "五代-花间集",
