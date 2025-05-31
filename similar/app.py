@@ -17,9 +17,9 @@ def recommend(dataset, text: Union[str,List[str]], num:int = 3) -> List[List[str
     with open(f"./models/{dataset}_model.pkl", "rb") as file:
         similarer = pickle.load(file)
     for id in similarer.find_similar_poem(text,num):
-        recommended.append(poems[id])
+        recommended.append(''.join(poems[id]))
 
-    return recommended
+    return '\n'.join(recommended)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -28,5 +28,4 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', type=str, help='style you want')
     args = parser.parse_args()
     recommended = recommend(args.dataset, args.text, args.num)
-    for t in recommended:
-        print(t)
+    print(recommended)
