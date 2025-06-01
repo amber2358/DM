@@ -16,3 +16,11 @@ python app.py
 ```bash
 pip install langchain jieba networkx 
 ```
+
+
+## Poetry
+``` 
+python app.py --text ...\
+              --num ...\
+              --dataset ...
+```

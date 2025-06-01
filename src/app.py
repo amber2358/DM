@@ -1,45 +1,43 @@
-import streamlit as st
-import pandas as pd
-import ast
 import os
+import ast
+import pandas as pd
+import streamlit as st
 import streamlit.components.v1 as components
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_chroma import Chroma
+
+from task_frequency import load_data, recommend_keyword
+from task_poetry import load_model, recommend_poetry
+from task_word import load_graph, recommend_next_char
+from task_meaning import build_vectorstore, recommend_sentences
 
 # ---------------------- 数据加载函数 ----------------------
 @st.cache_data
-def load_data(style):
-    base_dir = os.path.abspath(os.path.dirname(__file__))
-    data_dir = os.path.join(base_dir, f'../data/{style}')
-    itemsets_path = os.path.join(data_dir, 'merged_frequent_itemsets.json')
-    itemsets_df = pd.read_json(itemsets_path)
+def load_all_data(style):
+    df = load_data(style.lower())
+    p, s = load_model(style.lower())
 
-    if isinstance(itemsets_df.loc[0, 'itemsets'], str):
-        itemsets_df["itemsets"] = itemsets_df["itemsets"].apply(ast.literal_eval)
-
-    return itemsets_df
-
-# ---------------------- 推荐函数示例 ----------------------
-def recommend_by_keyword(keyword, itemsets_df):
-    keyword = keyword.strip()
-    related_words = set()
-
-    for _, row in itemsets_df.iterrows():
-        items = row["itemsets"]
-        if any(keyword in item for item in items):
-            for item in items:
-                if keyword != item:
-                    related_words.add(item)
-
-    return "、".join(sorted(related_words)) if related_words else "未找到关联词语，请尝试其他关键词。"
+    embed_model = HuggingFaceEmbeddings(
+                # model_name=f'maidalun1020/bce-embedding-base_v1',
+                model_name=f'../../bce-embedding-base_v1',
+                model_kwargs={'device': 'cpu'},
+                encode_kwargs={'batch_size': 4, 'normalize_embeddings': False}
+            )
+    vec = build_vectorstore(load_flag=True, class_name=style.lower(), embed_model=embed_model)
+    
+    pr, G = load_graph(style.lower())  
+    
+    return df, p, s, vec, pr, G
 
 # ---------------------- Streamlit 界面 ----------------------
 st.set_page_config(page_title="古典体裁词语推荐系统", layout="wide")
-# ---------------------- 嵌入网页 ----------------------
 
+# ---------------------- 嵌入网页 ----------------------
 with open("./index.html", "r", encoding="utf-8") as f:
     html_content = f.read()
 
 st.markdown("### 🌐 产品展示页面")
-components.html(html_content, height=600, scrolling=True)
+components.html("https://the-bird-f.github.io/-/", height=600, scrolling=True)
 
 # CSS样式放大字体和调整左栏header
 st.markdown("""
@@ -96,13 +94,30 @@ with right_col:
     run = st.button("开始推荐")
 
     if run:
-        df = load_data(style)
-        if method == "关联词推荐":
-            result = recommend_by_keyword(keyword, df)
+        df, p, s, vec, pr, G  = load_all_data(style)
+        
+        if method == "推荐下一个字":
+            result = recommend_next_char(keyword, pr, G, top_k=5)
+            st.success("推荐结果：")
+            st.text_area("推荐", result, height=200)
+        
+        elif method == "推荐主题词语":
+            result = recommend_keyword(keyword, df)
             st.success("推荐结果：")
             st.text_area("推荐词语", result, height=200)
-        else:
-            st.info("该方法暂未实现，请自行补充函数。")
+            
+            
+        elif method == "推荐相关诗句":
+            result = recommend_sentences(keyword, vec, top_n=5)
+            st.success("推荐结果：")
+            st.text_area("推荐诗句", result, height=200)
+            
+        elif method == "推荐相关诗篇":
+            result =  recommend_poetry(keyword, p, s, num=3)
+            st.success("推荐结果：")
+            st.text_area("推荐诗篇", result, height=200)
+            
+            # st.info("该方法暂未实现，请自行补充函数。")
 
 # ---------------------- 使用说明 ----------------------
 with st.expander("使用说明", expanded=False):
@@ -112,7 +127,8 @@ with st.expander("使用说明", expanded=False):
     - 推荐词语适合用于辅助创作、构思诗意意象、模仿风格。
 
     **体裁说明：**
-    - `Chuci`：楚辞（屈原创作风格，想象丰富）
-    - `Shi`：古诗（以唐诗为主，意境严谨）
-    - `Ci`：宋词（婉约或豪放，多描情写景）
+    - `chuci`：楚辞（屈原创作风格，想象丰富）
+    - `shi`：古诗（以唐诗为主，意境严谨）
+    - `songci`：宋词（婉约或豪放，多描情写景）
+    - `yuanqu`：元曲（戏剧性强，语言通俗）
     """)

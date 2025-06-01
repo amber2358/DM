@@ -6,13 +6,8 @@ import re
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 
-project_root = os.path.abspath(os.path.dirname(__file__))
-loader_path = os.path.join(project_root, 'loader')
-sys.path.append(loader_path)
 
-# 导入数据加载器
 from data_loader import PlainDataLoader
-
 
 
 embed_model = HuggingFaceEmbeddings(

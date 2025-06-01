@@ -7,10 +7,6 @@ import re
 import networkx as nx
 from collections import defaultdict
 
-project_root = os.path.abspath(os.path.dirname(__file__))
-loader_path = os.path.join(project_root, 'loader')
-sys.path.append(loader_path)
-# 导入数据加载器
 from data_loader import PlainDataLoader
 
 
@@ -47,16 +43,17 @@ def build_graph(class_name):
     with open(f"word_{class_name}.pkl", "wb") as f:
         pickle.dump(pr, f)
 
-
-
-def predict_next_char(prefix, class_name, top_k=5):
-    """
-    根据前缀 prefix 预测下一个字    
-    """
+def load_graph(class_name):
     with open(f"./word_data/word_{class_name}.pkl", "rb") as f:
         pr = pickle.load(f)
     with open(f"./word_data/graph_{class_name}.pkl", "rb") as f:
-        G = pickle.load(f)    
+        G = pickle.load(f)   
+    return pr, G
+
+def recommend_next_char(prefix, pr, G, top_k=5):
+    """
+    根据前缀 prefix 预测下一个字    
+    """ 
     
     if not prefix:
         return sorted(pr.items(), key=lambda x: -x[1])[:top_k]
@@ -85,5 +82,6 @@ if __name__ == "__main__":
     # build_graph(class_name)
     
     prefix = "春天的花"
-    next_chars = predict_next_char(prefix, class_name, top_k=5)
+    pr, G = load_graph(class_name)
+    next_chars = recommend_next_char(prefix, pr, G, top_k=5)
     print(f"前缀 '{prefix}' 的下一个字预测：{next_chars}")
