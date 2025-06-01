@@ -50,8 +50,8 @@ if __name__ == "__main__":
     # st.markdown("### 🌐 展示页面")
     # components.html(html_content, height=600, scrolling=True)
 
-    img_path = "./background2.jpg"  # ./background1.jpg
-    color = "#0d1117" # 科技感蓝黑 "#e0d8c3" 古风米黄色
+    img_path = "./background3.png"  # ./background1.jpg
+    color = "#0d1117" # 科技感蓝黑 "#0d1117" 古风米黄色"#e0d8c3" 
     img_base64 = get_base64_of_bin_file(img_path)
     
     background_css = f"""
@@ -65,7 +65,7 @@ if __name__ == "__main__":
             font-family: "KaiTi", "STKaiti", "SimSun", serif;
             color: #2f2f2f;
         }}
-
+        
         /* 底座容器 */
         .base-container {{
             margin: 30px auto;  /* 居中 */
@@ -136,10 +136,10 @@ if __name__ == "__main__":
         .stButton>button {{
             font-size: 18px !important;          /* 字体大小设为18像素，`!important`表示强制覆盖其他冲突样式 */
             height: 20px !important;              /* 按钮高度设为40像素，带`!important`确保生效 */
-            padding: 6px 20px !important;         /* 内边距，6像素上下，20像素左右，带`!important` */
+            padding: 10px 20px !important;         /* 内边距，6像素上下，20像素左右，带`!important` */
             background-color: #c5b796 !important;/* 背景色，浅米黄色，带`!important`确保覆盖默认样式 */
             color: black;                         /* 字体颜色设为黑色 */
-            border-radius: 8px;                   /* 按钮圆角半径为8像素，圆润效果 */
+            border-radius: 5px;                   /* 按钮圆角半径为8像素，圆润效果 */
             border: 1px solid #aaa;               /* 边框为1像素实线，颜色是浅灰色 */
             transition: background-color 0.3s;   /* 背景色变化时，动画过渡时间0.3秒，平滑过渡 */
         }}
@@ -151,7 +151,7 @@ if __name__ == "__main__":
         
         
         .expander-box {{
-            background-color: rgba(255, 255, 255, 0.9); 
+            background-color: rgba(245, 250, 255, 0.9); 
             padding: 16px;
             border-radius: 10px;
             border: 1px solid #ccc;
@@ -162,15 +162,15 @@ if __name__ == "__main__":
 
         /* 正文段落 */
         p {{
-            font-size: 18px !important; /* 字体大小设为10像素，`!important`表示强制覆盖其他冲突样式 */
+            font-size: 20px !important; /* 字体大小设为10像素，`!important`表示强制覆盖其他冲突样式 */
             background-color: rgba(255, 248, 235, 0.0); /* 更古风的米黄色 */
-            padding: 16px 20px;  /* 上下16像素，左右20像素内边距 */
+            padding: 10px 25px;  /* 上下10像素，左右20像素内边距 */
             border-radius: 10px; 
             border: 0px solid #e1d3b8;
-            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.00);
             font-family: "KaiTi", "STKaiti", "SimSun", serif;
-            color: {color}; /* 字体颜色设为浅米色 */
-            line-height: 1.75;
+            color: {color}; /* 字体颜色 */
+            line-height: 1.5;
             margin-bottom: 16px;
         }}
         </style>
@@ -181,7 +181,7 @@ if __name__ == "__main__":
     
     st.markdown("""
         <h2 style='text-align: center;'>古代诗歌辅助创作系统</h2>
-        <p style='text-align: center;'>由六砚斋·数据挖掘坊创造，支持 楚辞 / 唐诗 / 宋词 / 元曲 创作 </p>
+        <p style='text-align: center; color: #0d1117; '>由 六砚斋·数据挖掘坊 倾情打造，支持 楚辞 / 唐诗 / 宋词 / 元曲 创作 </p>
     """, unsafe_allow_html=True)
 
     st.markdown("""
@@ -254,8 +254,9 @@ if __name__ == "__main__":
             index=0
         )
 
+        
     with right_col:
-        keyword = st.text_area("开始我的创作", value="", placeholder="如：山、水、芳草")
+        keyword = st.text_area("开始我的创作", value="", placeholder="如：山川异域，风月同天")
         run = st.button("推荐一下")
 
         if run:
@@ -263,32 +264,34 @@ if __name__ == "__main__":
             
             if method == "推荐下一个字":
                 result = recommend_next_char(keyword, pr, G, top_k=5)
-                st.success("推荐结果：")
+                # st.success("推荐结果：")
                 st.text_area("推荐", result, height=200)
             
             elif method == "推荐主题词语":
                 result = recommend_keyword(keyword, df)
-                st.success("推荐结果：")
+                # st.success("推荐结果：")
                 st.text_area("推荐词语", result, height=200)
                 
                 
             elif method == "推荐相关诗句":
                 result = recommend_sentences(keyword, vec, top_n=5)
-                st.success("推荐结果：")
+                # st.success("推荐结果：")
                 st.text_area("推荐诗句", result, height=200)
                 
             elif method == "推荐相关诗篇":
                 result =  recommend_poetry(keyword, p, s, num=3)
-                st.success("推荐结果：")
+                # st.success("推荐结果：")
                 st.text_area("推荐诗篇", result, height=200)
                 
                 # st.info("该方法暂未实现，请自行补充函数。")
-    
+                
     
     # ---------------------- 使用说明 ----------------------
     with st.expander("使用说明", expanded=False):
         st.markdown("""
         <div class="expander-box">
+        Hi~ o(*￣▽￣*)ブ 这里是使用说明
+        
         **使用方法:**
         - 输入一个关键词（如“山”、“月”、“风”等），系统会分析该体裁中与之经常共现的词语。  
         - 共现关系基于多种方式挖掘（语义or词频相似度）。  
