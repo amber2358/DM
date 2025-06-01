@@ -10,3 +10,9 @@ pip install -r requirements.txt
 cd src
 python app.py
 ```
+
+
+## More
+```bash
+pip install langchain jieba networkx 
+```
