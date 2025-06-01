@@ -56,7 +56,7 @@ def recommend_next_char(prefix, pr, G, top_k=5):
     """ 
     
     if not prefix:
-        return sorted(pr.items(), key=lambda x: -x[1])[:top_k]
+        return "😢(还没输入)"
     
     last_char = prefix[-1]
     if last_char not in G:
