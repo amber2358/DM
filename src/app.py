@@ -43,8 +43,8 @@ if __name__ == "__main__":
     st.set_page_config(page_title="六砚·字库", layout="wide")
 
     # ---------------------- 嵌入网页 ----------------------
-    with open("./index.html", "r", encoding="utf-8") as f:
-        html_content = f.read()
+    # with open("./index.html", "r", encoding="utf-8") as f:
+    #     html_content = f.read()
 
     # st.markdown("### 🌐 展示页面")
     # components.html(html_content, height=600, scrolling=True)
@@ -233,6 +233,11 @@ if __name__ == "__main__":
             margin-bottom: 20px;
             text-shadow: 0.5px 0.5px 0.5px #d7c9a7; /* 柔和阴影 */
         }
+        
+        input[type="number"] {
+            height: 40px;
+            font-size: 16px;
+        }
         </style>
         """, unsafe_allow_html=True)
 
@@ -246,25 +251,26 @@ if __name__ == "__main__":
 
         style_display = st.selectbox("请选择体裁", style_zh, index=0)
         style = style_en[style_zh.index(style_display)]
-        
+        num_recommend = st.number_input("推荐数量", min_value=1, max_value=20, value=5, step=1)
         method = st.radio(
-            "选择推荐方法",
+            "选择想使用的功能",
             ["推荐下一个字", "推荐主题词语", "推荐相关诗句", "推荐相关诗篇"],
             index=0
         )
 
         
     with right_col:
-        keyword = st.text_area("开始我的创作", value="", placeholder="如：山川异域，风月同天")
+        keyword = st.text_area("开始我的创作", value="", placeholder="如：山川异域，风月同天 / 只因你太美")
         run = st.button("推荐一下")
+        
 
         if run:
             df, p, s, vec, pr, G  = load_all_data(style)
             
             if method == "推荐下一个字":
-                result = recommend_next_char(keyword, pr, G, top_k=5)
+                result = recommend_next_char(keyword, pr, G, top_k=num_recommend+1)
                 # st.success("推荐结果：")
-                st.text_area("推荐", result, height=200)
+                st.text_area("推荐下一个字", result, height=200)
             
             elif method == "推荐主题词语":
                 result = recommend_keyword(keyword, df)
@@ -273,14 +279,14 @@ if __name__ == "__main__":
                 
                 
             elif method == "推荐相关诗句":
-                result = recommend_sentences(keyword, vec, top_n=5)
+                result = recommend_sentences(keyword, vec, top_n=num_recommend+1)
                 # st.success("推荐结果：")
-                st.text_area("推荐诗句", result, height=200)
+                st.text_area("推荐诗句", result, height=250)
                 
             elif method == "推荐相关诗篇":
-                result =  recommend_poetry(keyword, p, s, num=3)
+                result =  recommend_poetry(keyword, p, s, num=num_recommend)
                 # st.success("推荐结果：")
-                st.text_area("推荐诗篇", result, height=200)
+                st.text_area("推荐诗篇", result, height=280)
                 
                 # st.info("该方法暂未实现，请自行补充函数。")
                 
