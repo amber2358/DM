@@ -28,8 +28,7 @@ def load_all_data(style):
     p, s = load_model(style.lower())
 
     embed_model = HuggingFaceEmbeddings(
-                # model_name=f'maidalun1020/bce-embedding-base_v1',
-                model_name=f'../../bce-embedding-base_v1',
+                model_name=f'maidalun1020/bce-embedding-base_v1',
                 model_kwargs={'device': 'cpu'},
                 encode_kwargs={'batch_size': 4, 'normalize_embeddings': False}
             )

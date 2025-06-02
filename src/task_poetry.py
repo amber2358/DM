@@ -12,6 +12,8 @@ def load_model(dataset: str):
     """
     Load the similarity model for the specified dataset.
     """
+    if dataset == 'shi':
+        dataset = 'yudingquantangshi'
     if dataset not in ['songci', 'yuanqu', 'yudingquantangshi', 'chuci']:
         raise TypeError("Unsupported dataset. Supported datasets are: songci, yuanqu, yudingquantangshi, chuci.")
     
@@ -35,14 +37,14 @@ def recommend_poetry(text: Union[str,List[str]], poems, similarer:Get_Similarity
             content = content[:100] + '……'
         recommended.append(content)
 
-    return '\n'.join(recommended)
+    return '\n\n'.join(recommended)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--text", type=str, default="山水风光", help='words or sentences already written')
     parser.add_argument('--num', type=int, default=3, help='number of poems you want to recommend for you')
 
-    parser.add_argument('--dataset', type=str, default="chuci" ,help='style you want')
+    parser.add_argument('--dataset', type=str, default="songci" ,help='style you want')
     args = parser.parse_args()
     peoms, similarer = load_model(args.dataset)
     recommended = recommend_poetry(args.text, peoms, similarer, args.num)

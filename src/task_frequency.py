@@ -31,8 +31,8 @@ def recommend_keyword(keyword, itemsets_df):
     return "、".join(sorted(related_words)) if related_words else "😢 该词很可能是新词哦，古人还没用过相关的。"
 
 if __name__ == "__main__":
-    style = "songci"
-    keyword = "江南"
+    style = "chuci"
+    keyword = "春"
     df = load_data(style)
     result = recommend_keyword(keyword, df)
     print(f"推荐词语: {result}")

@@ -78,10 +78,10 @@ def recommend_next_char(prefix, pr, G, top_k=5):
     return "、".join(sorted(related_words)) if related_words else "😢(适合结束这句话了)"
 
 if __name__ == "__main__":
-    class_name = "shi" 
+    class_name = "yuanqu" 
     # build_graph(class_name)
     
     prefix = "春天的花"
     pr, G = load_graph(class_name)
-    next_chars = recommend_next_char(prefix, pr, G, top_k=5)
+    next_chars = recommend_next_char(prefix, pr, G, top_k=10)
     print(f"前缀 '{prefix}' 的下一个字预测：{next_chars}")
