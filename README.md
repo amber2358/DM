@@ -20,8 +20,7 @@ pip install -r requirements.txt
 ```
 ## run
 ```bash
-cd src
-python app.py
+streamlit run src/app.py
 ```
 
 
