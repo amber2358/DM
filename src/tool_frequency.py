@@ -17,22 +17,17 @@ from data_loader import PlainDataLoader
 if __name__ == "__main__":
     class_name = "chuci"
     loader = PlainDataLoader()
-    
+    project_root = ""
     if class_name == "chuci":   
-        # 加载楚辞正文内容
         # 9: 'chuci'
         chuci_data = loader.body_extractor("chuci")
         # print(f"共加载 {len(chuci_data)} 行楚辞，内容示意：")
         # print(chuci_data[0])
 
-        # 定义用于切分的符号，包括：兮，、。；！？等常见标点
         def mark_and_clean_line(line):
-            # 用这些标点符号统一替换为“|”
             line = re.sub(r'[兮，。、；！？：,.!?;:「」‘’“”()（）《》【】[\]{}<>——\-~·…]', '|', line)
-            # 再去除非中文和“|”的内容
             return re.sub(r'[^\u4e00-\u9fa5\|]', '', line)
 
-        # 保存分词结果
         fenci_data = []
         stopwords = set(['兮', '而', '之', '其', '不', '以', '于', '吾', '曰', '也', '与', '为', '余', '者'])
 
@@ -53,18 +48,14 @@ if __name__ == "__main__":
             fenci_data.append(line_data)
             # print("-" * 50)
 
-        # 示例查看
         print(fenci_data[0])
 
-        # 编码分词数据
         te = TransactionEncoder()
         te_ary = te.fit(fenci_data).transform(fenci_data)
         df = pd.DataFrame(te_ary, columns=te.columns_)
 
-        # 使用 FP-Growth 进行频繁项挖掘
         freq_itemsets = fpgrowth(df, min_support=0.0005, use_colnames=True)
 
-        # 排序查看前20个频繁项集
         top_freq = freq_itemsets.sort_values(by="support", ascending=False)
         print(top_freq)
 
@@ -86,12 +77,9 @@ if __name__ == "__main__":
         print(Ci_data[0])
 
         def mark_and_clean_line(line):
-            # 用这些标点符号统一替换为“|”
             line = re.sub(r'[，。、；！？：,.!?;:「」‘’“”()（）《》【】[\]{}<>——\-~·…]', '|', line)
-            # 再去除非中文和“|”的内容
             return re.sub(r'[^\u4e00-\u9fa5\|]', '', line)
 
-        # 保存分词结果
         fenci_data = []
         path1 = os.path.join(project_root, '../data/Ci/fenci_shi.txt')
         if not os.path.exists(path1):
@@ -110,7 +98,6 @@ if __name__ == "__main__":
                     # print(f"  分段{i+1}: {words}")
                 fenci_data.append(line_data)
                 # print("-" * 50)
-            # 示例查看
             print(fenci_data[0])
 
             with open(path1, 'w', encoding='utf-8') as f:
@@ -139,10 +126,8 @@ if __name__ == "__main__":
 
             return all_itemsets
 
-        # 1. 分批运行 FP-Growth
-        batch_results = run_fpgrowth_in_batches(fenci_data, batch_size=10000, min_support=0.001)
 
-        # 2. 合并所有频繁项集并重新计算支持度
+        batch_results = run_fpgrowth_in_batches(fenci_data, batch_size=10000, min_support=0.001)
 
         itemset_counter = defaultdict(float)
         total_transactions = 0
@@ -154,19 +139,14 @@ if __name__ == "__main__":
                 key = frozenset(row['itemsets'])
                 itemset_counter[key] += row['support'] * batch_size
 
-        # 3. 构造合并后的频繁项集 DataFrame
         merged_freq_itemsets = pd.DataFrame([
             {'itemsets': set(k), 'support': v / total_transactions}
             for k, v in itemset_counter.items()
         ])
 
-        # 4. 排序并显示前项
         merged_freq_itemsets = merged_freq_itemsets.sort_values(by='support', ascending=False)
         print(merged_freq_itemsets.head(20))
 
-        # 5. 可选：生成关联规则（如需）
-        # 需要先转化为 dummy df 格式再传入 association_rules
-        # 为了演示，下面是如何构造规则（如果 itemsets 太大，可能会失败）
         try:
             rules = association_rules(merged_freq_itemsets, metric="confidence", min_threshold=0.5)
             rules_sorted = rules.sort_values(by=['confidence', 'lift'], ascending=False)
@@ -186,12 +166,10 @@ if __name__ == "__main__":
         print(f"共加载 {len(Shi_data)} 行诗，内容示意：")
         print(Shi_data[0])
 
-
-        #繁体转简体
         path1 = os.path.join(project_root, '../data/Shi/simplified_shi.txt')
         if not os.path.exists(path1):
             from opencc import OpenCC
-            cc = OpenCC('t2s')  # 繁体到简体
+            cc = OpenCC('t2s')  
             Simplified_data = [cc.convert(line) for line in Shi_data]
             print(Simplified_data[0])
 
@@ -206,12 +184,9 @@ if __name__ == "__main__":
 
 
         def mark_and_clean_line(line):
-            # 用这些标点符号统一替换为“|”
             line = re.sub(r'[，。、；！？：,.!?;:「」‘’“”()（）《》【】[\]{}<>——\-~·…]', '|', line)
-            # 再去除非中文和“|”的内容
             return re.sub(r'[^\u4e00-\u9fa5\|]', '', line)
 
-        # 保存分词结果
         fenci_data = []
         path2 = os.path.join(project_root, '../data/Shi/fenci_shi.txt')
         if not os.path.exists(path2):
@@ -230,7 +205,6 @@ if __name__ == "__main__":
                     # print(f"  分段{i+1}: {words}")
                 fenci_data.append(line_data)
                 # print("-" * 50)
-            # 示例查看
             print(fenci_data[0])
 
             with open(path2, 'w', encoding='utf-8') as f:
@@ -259,10 +233,8 @@ if __name__ == "__main__":
 
             return all_itemsets
 
-        # 1. 分批运行 FP-Growth
         batch_results = run_fpgrowth_in_batches(fenci_data, batch_size=10000, min_support=0.001)
 
-        # 2. 合并所有频繁项集并重新计算支持度
         itemset_counter = defaultdict(float)
         total_transactions = 0
 
@@ -273,17 +245,15 @@ if __name__ == "__main__":
                 key = frozenset(row['itemsets'])
                 itemset_counter[key] += row['support'] * batch_size
 
-        # 3. 构造合并后的频繁项集 DataFrame
         merged_freq_itemsets = pd.DataFrame([
             {'itemsets': set(k), 'support': v / total_transactions}
             for k, v in itemset_counter.items()
         ])
 
-        # 4. 排序并显示前项
         merged_freq_itemsets = merged_freq_itemsets.sort_values(by='support', ascending=False)
         print(merged_freq_itemsets.head(20))
 
-        # 5. 可选：生成关联规则（如需）
+        # 可选：生成关联规则（如需）
         # 需要先转化为 dummy df 格式再传入 association_rules
         # 为了演示，下面是如何构造规则（如果 itemsets 太大，可能会失败）
         try:

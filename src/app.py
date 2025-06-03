@@ -241,11 +241,10 @@ if __name__ == "__main__":
         </style>
         """, unsafe_allow_html=True)
 
-    left_col, right_col = st.columns([0.7, 2.3])  # 左栏窄，右栏宽
+    left_col, right_col = st.columns([0.7, 2.3])  
 
     with left_col:
         st.markdown("<div class='left-header'>设置</div>", unsafe_allow_html=True)
-        # 显示中文体裁选项
         style_zh = ["楚辞", "唐诗", "宋词", "元曲"]
         style_en = ["chuci", "shi", "songci", "yuanqu"]
 
