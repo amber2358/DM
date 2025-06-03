@@ -12,7 +12,6 @@
 
 
 
-# DM
 ## Install
 ```bash
 conda create -n DM python=3.10
