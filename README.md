@@ -21,6 +21,8 @@
 
 ## Install
 ```bash
+git clone https://github.com/amber2358/DM.git
+cd DM
 conda create -n poetry python=3.11
 conda activate poetry
 pip install -r requirements.txt
